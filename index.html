@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>DeScrow</title>
+  <link rel="icon" href="icon.png"/>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="css/style.css"/>
+</head>
+<body>
+
+  <header>
+    <div class="logo">DeScrow</div>
+    <button id="connectBtn" onclick="handleConnect()">Підключити гаманець</button>
+  </header>
+
+  <main>
+    <div class="hero">
+      <div class="hero-badge">Ethereum · Sepolia Testnet</div>
+      <h1>Безпечна оплата<br/>для <span>фрілансерів</span></h1>
+      <p>Кошти блокуються в смарт-контракті і автоматично переходять до виконавця після підтвердження роботи. Без посередників.</p>
+    </div>
+
+    <div id="walletInfo" class="wallet-info" style="display:none">
+      <span>Гаманець: </span><span id="walletAddr"></span>
+    </div>
+
+    <div id="roleSelect" class="role-grid" style="display:none">
+      <div class="role-card" onclick="goTo('buyer.html')">
+        <div class="role-icon">💼</div>
+        <div class="role-title">Замовник</div>
+        <div class="role-sub">Створюю замовлення та вношу оплату</div>
+      </div>
+      <div class="role-card" onclick="goTo('seller.html')">
+        <div class="role-icon">💻</div>
+        <div class="role-title">Виконавець</div>
+        <div class="role-sub">Виконую роботу та завантажую результат</div>
+      </div>
+      <div class="role-card" onclick="goTo('arbiter.html')">
+        <div class="role-icon">⚖️</div>
+        <div class="role-title">Арбітр</div>
+        <div class="role-sub">Вирішую спори між сторонами</div>
+      </div>
+    </div>
+
+    <div id="notConnected" class="not-connected">
+      <p>Підключи гаманець щоб обрати роль</p>
+    </div>
+  </main>
+
+  <div id="toast"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
+  <script src="js/contract.js"></script>
+  <script>
+    function goTo(page) { window.location.href = page; }
+
+    function toast(msg, type = "loading") {
+      const el = document.getElementById("toast");
+      el.textContent = msg;
+      el.className = "show " + type;
+      if (type !== "loading") setTimeout(() => { el.className = ""; }, 4000);
+    }
+
+    async function handleConnect() {
+      try {
+        const signer = await connectWallet();
+        const addr = await signer.getAddress();
+        document.getElementById("connectBtn").textContent = addr.slice(0,6) + "..." + addr.slice(-4);
+        document.getElementById("connectBtn").classList.add("connected");
+        document.getElementById("walletAddr").textContent = addr;
+        document.getElementById("walletInfo").style.display = "flex";
+        document.getElementById("roleSelect").style.display = "grid";
+        document.getElementById("notConnected").style.display = "none";
+        toast("Гаманець підключено!", "success");
+      } catch(e) { toast("Помилка: " + e.message, "error"); }
+    }
+
+    window.addEventListener("load", async () => {
+      if (window.ethereum) {
+        const accounts = await window.ethereum.request({ method: "eth_accounts" });
+        if (accounts.length > 0) {
+          const signer = await connectWallet();
+          const addr = await signer.getAddress();
+          document.getElementById("connectBtn").textContent = addr.slice(0,6) + "..." + addr.slice(-4);
+          document.getElementById("connectBtn").classList.add("connected");
+          document.getElementById("walletAddr").textContent = addr;
+          document.getElementById("walletInfo").style.display = "flex";
+          document.getElementById("roleSelect").style.display = "grid";
+          document.getElementById("notConnected").style.display = "none";
+        }
+      }
+    });
+  </script>
+</body>
+</html>

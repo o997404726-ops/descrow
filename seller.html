@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>DeScrow — Виконавець</title>
+  <link rel="icon" href="icon.png"/>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="css/style.css"/>
+</head>
+<body>
+
+  <header>
+    <div class="logo">DeScrow</div>
+    <button id="connectBtn" onclick="handleConnect()">Підключити гаманець</button>
+  </header>
+
+  <main>
+    <div class="page-header">
+      <a href="index.html" class="btn btn-back">← Назад</a>
+      <div>
+        <h2>Панель виконавця</h2>
+        <p>Переглядайте замовлення та здавайте роботу</p>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <div class="card-icon icon-choco">🔍</div>
+        <div>
+          <div class="card-title">Переглянути замовлення</div>
+          <div class="card-sub">Знайдіть замовлення за ID</div>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="input-row">
+          <input id="dealIdView" placeholder="ID замовлення"/>
+          <button class="btn btn-outline" onclick="getDeal()">Знайти</button>
+        </div>
+        <div id="dealResult"></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <div class="card-icon icon-yellow">✋</div>
+        <div>
+          <div class="card-title">Прийняти замовлення</div>
+          <div class="card-sub">Ваша адреса фіксується в смарт-контракті</div>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="info-box">
+          Після прийняття замовлення ваша адреса записується в блокчейн. Ви берете на себе зобов'язання виконати роботу.
+        </div>
+        <div class="input-row">
+          <input id="dealIdAccept" placeholder="ID замовлення"/>
+          <button class="btn btn-primary" onclick="acceptDeal()">Прийняти замовлення</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <div class="card-icon icon-yellow">📤</div>
+        <div>
+          <div class="card-title">Здати роботу</div>
+          <div class="card-sub">Файл зберігається в IPFS — хеш записується в блокчейн як доказ</div>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="info-box">
+          Файл зберігається в децентралізованому сховищі IPFS. Його хеш записується в смарт-контракт як незмінний доказ здачі роботи.
+        </div>
+        <label>ID замовлення</label>
+        <input id="dealIdSubmit" placeholder="ID замовлення"/>
+        <label>Файл з результатом роботи</label>
+        <input type="file" id="workFile" style="cursor:pointer"/>
+        <div class="btn-row" style="margin-top:8px">
+          <button class="btn btn-primary" onclick="submitWork()">Завантажити та здати роботу</button>
+        </div>
+        <div id="ipfsResult"></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <div class="card-icon icon-orange">⚠️</div>
+        <div>
+          <div class="card-title">Відкрити спір</div>
+          <div class="card-sub">Якщо замовник не підтверджує роботу без причини</div>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="input-row">
+          <input id="dealIdDispute" placeholder="ID замовлення"/>
+          <button class="btn btn-warn" onclick="openDispute()">Відкрити спір</button>
+        </div>
+        <div class="input-hint">Арбітр буде призначений автоматично з пулу</div>
+      </div>
+    </div>
+
+  </main>
+
+  <div id="toast"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
+  <script src="js/contract.js"></script>
+  <script src="js/seller.js"></script>
+</body>
+</html>

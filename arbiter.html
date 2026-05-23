@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>DeScrow — Арбітр</title>
+  <link rel="icon" href="icon.png"/>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="css/style.css"/>
+</head>
+<body>
+
+  <header>
+    <div class="logo">DeScrow</div>
+    <button id="connectBtn" onclick="handleConnect()">Підключити гаманець</button>
+  </header>
+
+  <main>
+    <div class="page-header">
+      <a href="index.html" class="btn btn-back">← Назад</a>
+      <div>
+        <h2>Панель арбітра</h2>
+        <p>Вирішуйте спори між замовниками та виконавцями</p>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <div class="card-icon icon-choco">📝</div>
+        <div>
+          <div class="card-title">Реєстрація арбітра</div>
+          <div class="card-sub">Зареєструйтесь щоб отримувати справи для розгляду</div>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="info-box">
+          Після реєстрації ваш гаманець потрапляє до пулу арбітрів. При відкритті спору система автоматично призначить одного з арбітрів.
+        </div>
+        <div id="arbiterStatus" class="status-bar" style="display:none">
+          Ви зареєстровані як арбітр
+        </div>
+        <div class="btn-row">
+          <button class="btn btn-primary" onclick="registerAsArbiter()">Зареєструватись як арбітр</button>
+          <button class="btn btn-outline" onclick="checkArbitersCount()">Перевірити пул арбітрів</button>
+        </div>
+        <div id="arbiterCount" style="font-size:13px;color:var(--muted);margin-top:12px;"></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <div class="card-icon icon-yellow">🔍</div>
+        <div>
+          <div class="card-title">Переглянути справу</div>
+          <div class="card-sub">Знайдіть угоду зі спором для розгляду</div>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="input-row">
+          <input id="dealIdView" placeholder="ID замовлення"/>
+          <button class="btn btn-outline" onclick="getDeal()">Знайти</button>
+        </div>
+        <div id="dealResult"></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <div class="card-icon icon-orange">⚖️</div>
+        <div>
+          <div class="card-title">Вирішення спору</div>
+          <div class="card-sub">Доступно лише призначеному арбітру після відкриття спору</div>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="info-box">
+          Перед прийняттям рішення перегляньте ТЗ та результат роботи на IPFS.
+        </div>
+        <label>ID замовлення</label>
+        <input id="dealIdResolve" placeholder="ID замовлення"/>
+        <div class="btn-row">
+          <button class="btn btn-outline" onclick="resolveDispute(true)">На користь замовника</button>
+          <button class="btn btn-primary" onclick="resolveDispute(false)">На користь виконавця</button>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <div id="toast"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
+  <script src="js/contract.js"></script>
+  <script src="js/arbiter.js"></script>
+</body>
+</html>

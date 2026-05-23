@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>DeScrow — Замовник</title>
+  <link rel="icon" href="icon.png"/>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="css/style.css"/>
+</head>
+<body>
+
+  <header>
+    <div class="logo">DeScrow</div>
+    <button id="connectBtn" onclick="handleConnect()">Підключити гаманець</button>
+  </header>
+
+  <main>
+    <div class="page-header">
+      <a href="index.html" class="btn btn-back">← Назад</a>
+      <div>
+        <h2>Панель замовника</h2>
+        <p>Створюйте замовлення та керуйте угодами</p>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <div class="card-icon icon-choco">📋</div>
+        <div>
+          <div class="card-title">Нове замовлення</div>
+          <div class="card-sub">Опис завдання зберігається в IPFS — незмінний доказ умов угоди</div>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="info-box">
+          Після створення замовлення кошти заблоковані в смарт-контракті. Опис завдання записується в блокчейн як незмінний доказ.
+        </div>
+        <label>Назва проєкту</label>
+        <input id="projectName" placeholder="наприклад: Розробка лендінгу"/>
+        <label>Опис завдання</label>
+        <textarea id="projectDesc" placeholder="Детально опишіть що потрібно зробити..."></textarea>
+        <label>Дедлайн</label>
+        <input type="date" id="deadline"/>
+        <label>Сума оплати (ETH)</label>
+        <input id="amount" placeholder="наприклад: 0.01" style="max-width:200px"/>
+        <div class="btn-row">
+          <button class="btn btn-primary" onclick="createDeal()">Створити замовлення</button>
+        </div>
+        <div id="createResult"></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <div class="card-icon icon-yellow">🔍</div>
+        <div>
+          <div class="card-title">Переглянути замовлення</div>
+          <div class="card-sub">Перевірте статус та деталі угоди</div>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="input-row">
+          <input id="dealIdView" placeholder="ID замовлення"/>
+          <button class="btn btn-outline" onclick="getDeal()">Знайти</button>
+        </div>
+        <div id="dealResult"></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <div class="card-icon icon-yellow">⚙️</div>
+        <div>
+          <div class="card-title">Управління замовленням</div>
+          <div class="card-sub">Підтвердити виконання або відкрити спір</div>
+        </div>
+      </div>
+      <div class="card-body">
+        <label>Підтвердити виконання роботи</label>
+        <div class="input-row">
+          <input id="dealIdConfirm" placeholder="ID замовлення"/>
+          <button class="btn btn-green" onclick="confirmDelivery()">Виплатити виконавцю</button>
+        </div>
+        <div class="input-hint">Кошти одразу надійдуть на гаманець виконавця</div>
+
+        <div class="divider"></div>
+
+        <label>Скасувати замовлення</label>
+        <div class="input-row">
+          <input id="dealIdCancel" placeholder="ID замовлення"/>
+          <button class="btn btn-outline" onclick="cancelDeal()">Повернути кошти</button>
+        </div>
+        <div class="input-hint">Повернення можливе лише до підтвердження виконання</div>
+
+        <div class="divider"></div>
+
+        <label>Відкрити спір</label>
+        <div class="input-row">
+          <input id="dealIdDispute" placeholder="ID замовлення"/>
+          <button class="btn btn-warn" onclick="openDispute()">Відкрити спір</button>
+        </div>
+        <div class="input-hint">Арбітр буде призначений автоматично з пулу</div>
+      </div>
+    </div>
+
+  </main>
+
+  <div id="toast"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
+  <script src="js/contract.js"></script>
+  <script src="js/buyer.js"></script>
+</body>
+</html>
