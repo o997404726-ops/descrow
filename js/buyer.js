@@ -76,22 +76,21 @@ async function createDeal() {
     const event = receipt.events.find(e => e.event === "DealCreated");
     const dealId = event ? event.args[0].toString() : "?";
 
-    document.getElementById("createResult").innerHTML = `
-      <div class="deal-card" style="margin-top:16px">
-        <div class="deal-id">✅ Замовлення #${dealId} створено!</div>
-        <div style="font-size:13px;color:var(--muted);margin-top:8px;">
-          Заблоковано: <strong>${amount} ETH</strong>
-        </div>
-        <div style="font-size:13px;font-weight:600;margin-top:10px;color:var(--text)">
-          📢 Надішліть виконавцю ID замовлення: <span style="color:var(--pink);font-size:18px">#${dealId}</span>
-        </div>
-        <div style="font-size:12px;color:var(--muted);margin-top:8px;">
-          ТЗ на IPFS: <span style="font-family:monospace;color:var(--pink)">${ipfsHash}</span>
-        </div>
-        <div style="margin-top:8px">
-          <a href="https://gateway.pinata.cloud/ipfs/${ipfsHash}" target="_blank" style="color:var(--pink);font-size:12px;">Переглянути ТЗ →</a>
-        </div>
-      </div>`;
+   document.getElementById("createResult").innerHTML = `
+  <div class="deal-card" style="margin-top:16px">
+    <div class="deal-id">Замовлення #${dealId} створено!</div>
+    <div class="deal-amount" style="font-size:16px;margin-top:4px;">${name}</div>
+    <div style="font-size:13px;color:var(--muted);margin-top:8px;">
+      Заблоковано: <strong style="color:var(--text)">${amount} ETH</strong>
+      &nbsp;·&nbsp; Дедлайн: <strong style="color:var(--text)">${deadline || "не вказано"}</strong>
+    </div>
+    <div style="font-size:12px;color:var(--muted);margin-top:10px;padding-top:10px;border-top:1px solid var(--border);">
+      ТЗ збережено на IPFS — виконавці бачать замовлення в списку відкритих
+    </div>
+    <div style="margin-top:8px">
+      <a href="https://gateway.pinata.cloud/ipfs/${ipfsHash}" target="_blank" style="color:var(--choco);font-size:12px;">Переглянути ТЗ →</a>
+    </div>
+  </div>`;
 
     toast("✅ Замовлення #" + dealId + " створено!", "success");
   } catch(e) { toast("❌ " + (e.reason || e.message), "error"); }

@@ -44,9 +44,7 @@
         <input type="date" id="deadline"/>
         <label>Сума оплати (ETH)</label>
         <input id="amount" placeholder="наприклад: 0.01" style="max-width:200px"/>
-        <div class="btn-row">
-          <button class="btn btn-primary" onclick="createDeal()">Створити замовлення</button>
-        </div>
+        <button class="btn btn-primary" onclick="createDeal()">Створити замовлення</button>
         <div id="createResult"></div>
       </div>
     </div>
@@ -77,34 +75,28 @@
         </div>
       </div>
       <div class="card-body">
+
         <label>Підтвердити виконання роботи</label>
-        <div class="input-row">
-          <input id="dealIdConfirm" placeholder="ID замовлення"/>
-          <button class="btn btn-green" onclick="confirmDelivery()">Виплатити виконавцю</button>
-        </div>
+        <input id="dealIdConfirm" placeholder="ID замовлення"/>
+        <button class="btn btn-green" onclick="confirmDelivery()">Виплатити виконавцю</button>
         <div class="input-hint">Кошти одразу надійдуть на гаманець виконавця</div>
 
         <div class="divider"></div>
 
         <label>Скасувати замовлення</label>
-        <div class="input-row">
-          <input id="dealIdCancel" placeholder="ID замовлення"/>
-          <button class="btn btn-outline" onclick="cancelDeal()">Повернути кошти</button>
-        </div>
+        <input id="dealIdCancel" placeholder="ID замовлення"/>
+        <button class="btn btn-outline" onclick="cancelDeal()">Повернути кошти</button>
         <div class="input-hint">Повернення можливе лише до підтвердження виконання</div>
 
         <div class="divider"></div>
 
-       <label>Відкрити спір</label>
-<div class="input-row">
-  <input id="dealIdDispute" placeholder="ID замовлення"/>
-</div>
-<label>Причина спору</label>
-<input id="disputeReason" placeholder="наприклад: дедлайн минув, робота не відповідає ТЗ..."/>
-<div class="btn-row">
-  <button class="btn btn-warn" onclick="openDispute()">Відкрити спір</button>
-</div>
-<div class="input-hint">Арбітр буде призначений автоматично з пулу</div>
+        <label>Відкрити спір</label>
+        <input id="dealIdDispute" placeholder="ID замовлення"/>
+        <label>Причина спору</label>
+        <input id="disputeReason" placeholder="наприклад: дедлайн минув, робота не відповідає ТЗ..."/>
+        <button class="btn btn-warn" onclick="openDispute()">Відкрити спір</button>
+        <div class="input-hint">Арбітр буде призначений автоматично з пулу</div>
+
       </div>
     </div>
 
