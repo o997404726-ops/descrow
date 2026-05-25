@@ -1,9 +1,9 @@
 const STATES = [
-  { label: "Відкрите",          cls: "badge-await" },
-  { label: "Очікує виконання",  cls: "badge-await" },
-  { label: "Завершено",         cls: "badge-done"  },
-  { label: "Повернуто",         cls: "badge-ref"   },
-  { label: "Спір",              cls: "badge-disp"  },
+  { label: "Відкрите",         cls: "badge-open"  },
+  { label: "Очікує виконання", cls: "badge-await" },
+  { label: "Завершено",        cls: "badge-done"  },
+  { label: "Повернуто",        cls: "badge-ref"   },
+  { label: "Спір",             cls: "badge-disp"  },
 ];
 
 let contract;
@@ -26,7 +26,48 @@ async function handleConnect() {
     btn.textContent = "✅ " + shortAddr(addr);
     btn.classList.add("connected");
     toast("Гаманець підключено!", "success");
+    await checkArbiterStatus();
+    await loadDisputedDeals();
   } catch(e) { toast("❌ " + e.message, "error"); }
+}
+
+async function checkArbiterStatus() {
+  if (!contract) return;
+  try {
+    const signer = await connectWallet();
+    const addr = await signer.getAddress();
+    const active = await contract.isActiveArbiter(addr);
+    const statusEl = document.getElementById("arbiterStatus");
+    const btnJoin = document.getElementById("btnJoin");
+    const btnLeave = document.getElementById("btnLeave");
+    const btnRejoin = document.getElementById("btnRejoin");
+
+    if (active) {
+      statusEl.style.display = "flex";
+      statusEl.textContent = "Ви активний арбітр — отримуєте справи";
+      btnJoin.style.display = "none";
+      btnLeave.style.display = "inline-flex";
+      btnRejoin.style.display = "none";
+    } else {
+      const isReg = await contract.isArbiter(addr).catch(() => false);
+      if (isReg) {
+        statusEl.style.display = "flex";
+        statusEl.textContent = "Ви вийшли з пулу — не отримуєте справи";
+        btnJoin.style.display = "none";
+        btnLeave.style.display = "none";
+        btnRejoin.style.display = "inline-flex";
+      } else {
+        statusEl.style.display = "none";
+        btnJoin.style.display = "inline-flex";
+        btnLeave.style.display = "none";
+        btnRejoin.style.display = "none";
+      }
+    }
+
+    const count = await contract.getActiveArbitersCount();
+    document.getElementById("arbiterCount").textContent =
+      "Активних арбітрів у пулі: " + count.toString();
+  } catch(e) { console.error(e); }
 }
 
 async function registerAsArbiter() {
@@ -35,25 +76,97 @@ async function registerAsArbiter() {
     toast("⏳ Реєструємось...");
     const tx = await contract.registerAsArbiter();
     await tx.wait();
-    document.getElementById("arbiterStatus").style.display = "flex";
-    toast("✅ Ви успішно зареєстровані як арбітр!", "success");
+    toast("✅ Ви зареєстровані як арбітр!", "success");
+    await checkArbiterStatus();
   } catch(e) { toast("❌ " + (e.reason || e.message), "error"); }
 }
 
-async function checkArbitersCount() {
+async function removeFromPool() {
   if (!contract) { toast("Спочатку підключи гаманець", "error"); return; }
   try {
-    const count = await contract.getArbitersCount();
-    document.getElementById("arbiterCount").textContent =
-      "👥 Зараз в пулі: " + count.toString() + " арбітр(ів)";
+    toast("⏳ Виходимо з пулу...");
+    const tx = await contract.removeFromPool();
+    await tx.wait();
+    toast("Ви вийшли з пулу арбітрів.", "success");
+    await checkArbiterStatus();
   } catch(e) { toast("❌ " + (e.reason || e.message), "error"); }
+}
+
+async function rejoinPool() {
+  if (!contract) { toast("Спочатку підключи гаманець", "error"); return; }
+  try {
+    toast("⏳ Повертаємось в пул...");
+    const tx = await contract.rejoinPool();
+    await tx.wait();
+    toast("✅ Ви повернулись в пул арбітрів!", "success");
+    await checkArbiterStatus();
+  } catch(e) { toast("❌ " + (e.reason || e.message), "error"); }
+}
+
+async function loadDisputedDeals() {
+  if (!contract) return;
+  try {
+    const signer = await connectWallet();
+    const myAddr = (await signer.getAddress()).toLowerCase();
+    const ids = await contract.getDisputedDeals();
+    const container = document.getElementById("disputedDealsList");
+
+    if (ids.length === 0) {
+      container.innerHTML = '<div style="color:var(--muted);font-size:13px;">Активних спорів немає</div>';
+      return;
+    }
+
+    container.innerHTML = "";
+    for (const id of ids) {
+      const [buyer, seller, arbiter, amount, state, taskHash, workHash, disputeReason] =
+        await contract.getDeal(id.toString());
+
+      const isMyCase = arbiter.toLowerCase() === myAddr;
+      const eth = ethers.utils.formatEther(amount);
+
+      const taskLink = taskHash
+        ? `<a href="https://gateway.pinata.cloud/ipfs/${taskHash}" target="_blank" style="color:var(--choco);font-size:12px;">Переглянути ТЗ →</a>`
+        : '<span style="color:var(--muted);font-size:12px;">ТЗ не додано</span>';
+
+      const workLink = workHash
+        ? `<a href="https://gateway.pinata.cloud/ipfs/${workHash}" target="_blank" style="color:var(--choco);font-size:12px;">Переглянути роботу →</a>`
+        : '<span style="color:var(--muted);font-size:12px;">Роботу не здано</span>';
+
+      container.innerHTML += `
+        <div class="deal-card" style="margin-bottom:12px;${isMyCase ? 'border-color:var(--choco);' : ''}">
+          <div class="deal-top">
+            <div>
+              <div class="deal-id">Справа #${id} ${isMyCase ? '— ВИ ПРИЗНАЧЕНІ' : ''}</div>
+              <div class="deal-amount">${eth} <span>ETH</span></div>
+            </div>
+            <span class="badge badge-disp">Спір</span>
+          </div>
+          <div class="deal-parties">
+            <div><div class="party-label">Замовник</div><div class="party-addr">${shortAddr(buyer)}</div></div>
+            <div><div class="party-label">Виконавець</div><div class="party-addr">${shortAddr(seller)}</div></div>
+            <div><div class="party-label">Арбітр</div><div class="party-addr">${shortAddr(arbiter)}</div></div>
+          </div>
+          ${disputeReason ? `<div style="margin-top:10px;font-size:12px;color:var(--muted);">Причина: <strong style="color:var(--text)">${disputeReason}</strong></div>` : ''}
+          <div style="display:flex;gap:16px;margin-top:10px;">
+            <div>${taskLink}</div>
+            <div>${workLink}</div>
+          </div>
+          ${isMyCase ? `
+          <div class="btn-row" style="margin-top:12px;">
+            <button class="btn btn-outline" onclick="resolveDispute(${id}, true)" style="font-size:12px;padding:8px 14px;">На користь замовника</button>
+            <button class="btn btn-primary" onclick="resolveDispute(${id}, false)" style="font-size:12px;padding:8px 14px;">На користь виконавця</button>
+          </div>` : ''}
+        </div>`;
+    }
+  } catch(e) { console.error(e); }
 }
 
 async function getDeal() {
   if (!contract) { toast("Спочатку підключи гаманець", "error"); return; }
   try {
     const id = document.getElementById("dealIdView").value.trim();
-    const [buyer, seller, arbiter, amount, state, taskHash, workHash] = await contract.getDeal(id);
+    const [buyer, seller, arbiter, amount, state, taskHash, workHash, disputeReason] =
+      await contract.getDeal(id);
     if (buyer === "0x0000000000000000000000000000000000000000") {
       document.getElementById("dealResult").innerHTML =
         '<div style="color:var(--muted);font-size:13px;margin-top:12px;">Замовлення не знайдено</div>';
@@ -63,13 +176,11 @@ async function getDeal() {
     const eth = ethers.utils.formatEther(amount);
     const arbiterText = arbiter === "0x0000000000000000000000000000000000000000"
       ? "Не призначено" : arbiter;
-
     const taskLink = taskHash
-      ? `<a href="https://gateway.pinata.cloud/ipfs/${taskHash}" target="_blank" style="color:var(--pink);font-size:13px;font-weight:600;">📋 Переглянути ТЗ →</a>`
+      ? `<a href="https://gateway.pinata.cloud/ipfs/${taskHash}" target="_blank" style="color:var(--choco);font-size:13px;font-weight:600;">Переглянути ТЗ →</a>`
       : '<span style="color:var(--muted);font-size:12px;">ТЗ не додано</span>';
-
     const workLink = workHash
-      ? `<a href="https://gateway.pinata.cloud/ipfs/${workHash}" target="_blank" style="color:var(--pink);font-size:13px;font-weight:600;">📁 Переглянути роботу →</a>`
+      ? `<a href="https://gateway.pinata.cloud/ipfs/${workHash}" target="_blank" style="color:var(--choco);font-size:13px;font-weight:600;">Переглянути роботу →</a>`
       : '<span style="color:var(--muted);font-size:12px;">Роботу ще не здано</span>';
 
     document.getElementById("dealResult").innerHTML = `
@@ -86,33 +197,27 @@ async function getDeal() {
           <div><div class="party-label">Виконавець</div><div class="party-addr">${seller}</div></div>
           <div><div class="party-label">Арбітр</div><div class="party-addr">${arbiterText}</div></div>
         </div>
-        <div style="display:flex;gap:24px;margin-top:14px;padding-top:14px;border-top:1px solid rgba(251,207,232,0.3);">
-          <div>
-            <div class="party-label">Технічне завдання</div>
-            ${taskLink}
-          </div>
-          <div>
-            <div class="party-label">Результат роботи</div>
-            ${workLink}
-          </div>
+        ${disputeReason ? `<div style="margin-top:10px;font-size:12px;color:var(--muted);">Причина спору: <strong>${disputeReason}</strong></div>` : ''}
+        <div style="display:flex;gap:24px;margin-top:14px;padding-top:14px;border-top:1px solid var(--border);">
+          <div><div class="party-label">ТЗ</div>${taskLink}</div>
+          <div><div class="party-label">Робота</div>${workLink}</div>
         </div>
       </div>`;
 
-    // автозаповнення поля resolve
     document.getElementById("dealIdResolve").value = id;
-
   } catch(e) { toast("❌ " + (e.reason || e.message), "error"); }
 }
 
-async function resolveDispute(favorBuyer) {
+async function resolveDispute(dealId, favorBuyer) {
   if (!contract) { toast("Спочатку підключи гаманець", "error"); return; }
   try {
-    const id = document.getElementById("dealIdResolve").value.trim();
+    const id = dealId !== undefined ? dealId : document.getElementById("dealIdResolve").value.trim();
     toast("⏳ Виносимо рішення...");
     const tx = await contract.resolveDispute(id, favorBuyer);
     await tx.wait();
     const winner = favorBuyer ? "замовника" : "виконавця";
     toast("⚖️ Рішення винесено на користь " + winner + "!", "success");
+    await loadDisputedDeals();
   } catch(e) { toast("❌ " + (e.reason || e.message), "error"); }
 }
 
@@ -126,6 +231,8 @@ window.addEventListener("load", async () => {
       const btn = document.getElementById("connectBtn");
       btn.textContent = "✅ " + shortAddr(addr);
       btn.classList.add("connected");
+      await checkArbiterStatus();
+      await loadDisputedDeals();
     }
   }
 });

@@ -174,10 +174,12 @@ async function openDispute() {
   if (!contract) { toast("Спочатку підключи гаманець", "error"); return; }
   try {
     const id = document.getElementById("dealIdDispute").value.trim();
+    const reason = document.getElementById("disputeReason").value.trim();
+    if (!reason) { toast("Вкажіть причину спору", "error"); return; }
     toast("⏳ Відкриваємо спір...");
-    const tx = await contract.openDispute(id);
+    const tx = await contract.openDispute(id, reason);
     await tx.wait();
-    toast("⚠️ Спір відкрито! Арбітр призначений автоматично.", "success");
+    toast("Спір відкрито! Арбітр призначений автоматично.", "success");
   } catch(e) { toast("❌ " + (e.reason || e.message), "error"); }
 }
 
@@ -191,6 +193,8 @@ window.addEventListener("load", async () => {
       const btn = document.getElementById("connectBtn");
       btn.textContent = "✅ " + shortAddr(addr);
       btn.classList.add("connected");
+      const today = new Date().toISOString().split('T')[0];
+      document.getElementById("deadline").min = today;
     }
   }
 });

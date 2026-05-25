@@ -4,7 +4,6 @@
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>DeScrow — Виконавець</title>
-  <link rel="icon" href="icon.png"/>
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
   <link rel="stylesheet" href="css/style.css"/>
 </head>
@@ -24,6 +23,26 @@
       </div>
     </div>
 
+    <!-- Відкриті замовлення -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-icon icon-yellow">📋</div>
+        <div>
+          <div class="card-title">Відкриті замовлення</div>
+          <div class="card-sub">Замовлення які чекають на виконавця</div>
+        </div>
+      </div>
+      <div class="card-body">
+        <div id="openDealsList">
+          <div style="color:var(--muted);font-size:13px;">Підключіть гаманець щоб побачити замовлення</div>
+        </div>
+        <div style="margin-top:16px">
+          <button class="btn btn-outline" onclick="loadOpenDeals()" style="font-size:12px;">Оновити список</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Переглянути замовлення -->
     <div class="card">
       <div class="card-header">
         <div class="card-icon icon-choco">🔍</div>
@@ -41,25 +60,7 @@
       </div>
     </div>
 
-    <div class="card">
-      <div class="card-header">
-        <div class="card-icon icon-yellow">✋</div>
-        <div>
-          <div class="card-title">Прийняти замовлення</div>
-          <div class="card-sub">Ваша адреса фіксується в смарт-контракті</div>
-        </div>
-      </div>
-      <div class="card-body">
-        <div class="info-box">
-          Після прийняття замовлення ваша адреса записується в блокчейн. Ви берете на себе зобов'язання виконати роботу.
-        </div>
-        <div class="input-row">
-          <input id="dealIdAccept" placeholder="ID замовлення"/>
-          <button class="btn btn-primary" onclick="acceptDeal()">Прийняти замовлення</button>
-        </div>
-      </div>
-    </div>
-
+    <!-- Здати роботу -->
     <div class="card">
       <div class="card-header">
         <div class="card-icon icon-yellow">📤</div>
@@ -83,6 +84,7 @@
       </div>
     </div>
 
+    <!-- Відкрити спір -->
     <div class="card">
       <div class="card-header">
         <div class="card-icon icon-orange">⚠️</div>
@@ -92,8 +94,13 @@
         </div>
       </div>
       <div class="card-body">
+        <label>ID замовлення</label>
         <div class="input-row">
           <input id="dealIdDispute" placeholder="ID замовлення"/>
+        </div>
+        <label>Причина спору</label>
+        <input id="disputeReasonSeller" placeholder="наприклад: замовник не виходить на зв'язок..."/>
+        <div class="btn-row">
           <button class="btn btn-warn" onclick="openDispute()">Відкрити спір</button>
         </div>
         <div class="input-hint">Арбітр буде призначений автоматично з пулу</div>

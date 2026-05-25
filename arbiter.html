@@ -4,7 +4,6 @@
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>DeScrow — Арбітр</title>
-  <link rel="icon" href="icon.png"/>
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
   <link rel="stylesheet" href="css/style.css"/>
 </head>
@@ -24,35 +23,55 @@
       </div>
     </div>
 
+    <!-- Статус арбітра -->
     <div class="card">
       <div class="card-header">
-        <div class="card-icon icon-choco">📝</div>
+        <div class="card-icon icon-choco">⚖️</div>
         <div>
-          <div class="card-title">Реєстрація арбітра</div>
-          <div class="card-sub">Зареєструйтесь щоб отримувати справи для розгляду</div>
+          <div class="card-title">Статус арбітра</div>
+          <div class="card-sub">Керуйте своєю участю в пулі арбітрів</div>
         </div>
       </div>
       <div class="card-body">
         <div class="info-box">
-          Після реєстрації ваш гаманець потрапляє до пулу арбітрів. При відкритті спору система автоматично призначить одного з арбітрів.
+          Після реєстрації ваш гаманець потрапляє до пулу. При відкритті спору система автоматично призначить одного з активних арбітрів. Ви можете вийти з пулу коли не хочете отримувати справи.
         </div>
-        <div id="arbiterStatus" class="status-bar" style="display:none">
-          Ви зареєстровані як арбітр
-        </div>
+        <div id="arbiterStatus" class="status-bar" style="display:none"></div>
         <div class="btn-row">
-          <button class="btn btn-primary" onclick="registerAsArbiter()">Зареєструватись як арбітр</button>
-          <button class="btn btn-outline" onclick="checkArbitersCount()">Перевірити пул арбітрів</button>
+          <button id="btnJoin" class="btn btn-primary" onclick="registerAsArbiter()" style="display:none">Зареєструватись як арбітр</button>
+          <button id="btnLeave" class="btn btn-outline" onclick="removeFromPool()" style="display:none">Вийти з пулу</button>
+          <button id="btnRejoin" class="btn btn-primary" onclick="rejoinPool()" style="display:none">Повернутись в пул</button>
         </div>
         <div id="arbiterCount" style="font-size:13px;color:var(--muted);margin-top:12px;"></div>
       </div>
     </div>
 
+    <!-- Активні спори -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-icon icon-yellow">📋</div>
+        <div>
+          <div class="card-title">Активні спори</div>
+          <div class="card-sub">Справи де ви призначені арбітром виділені рамкою</div>
+        </div>
+      </div>
+      <div class="card-body">
+        <div id="disputedDealsList">
+          <div style="color:var(--muted);font-size:13px;">Підключіть гаманець щоб побачити справи</div>
+        </div>
+        <div style="margin-top:16px">
+          <button class="btn btn-outline" onclick="loadDisputedDeals()" style="font-size:12px;">Оновити список</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Переглянути справу -->
     <div class="card">
       <div class="card-header">
         <div class="card-icon icon-yellow">🔍</div>
         <div>
-          <div class="card-title">Переглянути справу</div>
-          <div class="card-sub">Знайдіть угоду зі спором для розгляду</div>
+          <div class="card-title">Переглянути справу за ID</div>
+          <div class="card-sub">Детальний перегляд замовлення</div>
         </div>
       </div>
       <div class="card-body">
@@ -64,12 +83,13 @@
       </div>
     </div>
 
+    <!-- Вирішення спору -->
     <div class="card">
       <div class="card-header">
         <div class="card-icon icon-orange">⚖️</div>
         <div>
           <div class="card-title">Вирішення спору</div>
-          <div class="card-sub">Доступно лише призначеному арбітру після відкриття спору</div>
+          <div class="card-sub">Доступно лише призначеному арбітру</div>
         </div>
       </div>
       <div class="card-body">
@@ -79,8 +99,8 @@
         <label>ID замовлення</label>
         <input id="dealIdResolve" placeholder="ID замовлення"/>
         <div class="btn-row">
-          <button class="btn btn-outline" onclick="resolveDispute(true)">На користь замовника</button>
-          <button class="btn btn-primary" onclick="resolveDispute(false)">На користь виконавця</button>
+          <button class="btn btn-outline" onclick="resolveDispute(undefined, true)">На користь замовника</button>
+          <button class="btn btn-primary" onclick="resolveDispute(undefined, false)">На користь виконавця</button>
         </div>
       </div>
     </div>
