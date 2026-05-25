@@ -138,7 +138,7 @@ async function loadDisputedDeals() {
       <div>
         <div class="deal-id">
           Справа #${id}
-          ${isMyCase ? '<span style="background:var(--choco);color:white;padding:2px 10px;border-radius:4px;font-size:10px;margin-left:8px;vertical-align:middle;">ВАШ КЕЙС</span>' : ''}
+          ${isMyCase ? '<span style="background:#513229;color:white;padding:2px 10px;border-radius:4px;font-size:10px;margin-left:8px;vertical-align:middle;">ВАШ КЕЙС</span>' : ''}
         </div>
         <div class="deal-amount">${eth} <span>ETH</span></div>
       </div>
