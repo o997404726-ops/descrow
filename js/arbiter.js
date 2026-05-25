@@ -133,30 +133,33 @@ async function loadDisputedDeals() {
         : '<span style="color:var(--muted);font-size:12px;">Роботу не здано</span>';
 
       container.innerHTML += `
-        <div class="deal-card" style="margin-bottom:12px;${isMyCase ? 'border-color:var(--choco);' : ''}">
-          <div class="deal-top">
-            <div>
-              <div class="deal-id">Справа #${id} ${isMyCase ? '— ВИ ПРИЗНАЧЕНІ' : ''}</div>
-              <div class="deal-amount">${eth} <span>ETH</span></div>
-            </div>
-            <span class="badge badge-disp">Спір</span>
-          </div>
-          <div class="deal-parties">
-            <div><div class="party-label">Замовник</div><div class="party-addr">${shortAddr(buyer)}</div></div>
-            <div><div class="party-label">Виконавець</div><div class="party-addr">${shortAddr(seller)}</div></div>
-            <div><div class="party-label">Арбітр</div><div class="party-addr">${shortAddr(arbiter)}</div></div>
-          </div>
-          ${disputeReason ? `<div style="margin-top:10px;font-size:12px;color:var(--muted);">Причина: <strong style="color:var(--text)">${disputeReason}</strong></div>` : ''}
-          <div style="display:flex;gap:16px;margin-top:10px;">
-            <div>${taskLink}</div>
-            <div>${workLink}</div>
-          </div>
-          ${isMyCase ? `
-          <div class="btn-row" style="margin-top:12px;">
-            <button class="btn btn-outline" onclick="resolveDispute(${id}, true)" style="font-size:12px;padding:8px 14px;">На користь замовника</button>
-            <button class="btn btn-primary" onclick="resolveDispute(${id}, false)" style="font-size:12px;padding:8px 14px;">На користь виконавця</button>
-          </div>` : ''}
-        </div>`;
+  <div class="deal-card" style="margin-bottom:12px;">
+    <div class="deal-top">
+      <div>
+        <div class="deal-id">
+          Справа #${id}
+          ${isMyCase ? '<span style="background:var(--choco);color:white;padding:2px 10px;border-radius:4px;font-size:10px;margin-left:8px;vertical-align:middle;">ВАШ КЕЙС</span>' : ''}
+        </div>
+        <div class="deal-amount">${eth} <span>ETH</span></div>
+      </div>
+      <span class="badge badge-disp">Спір</span>
+    </div>
+    <div class="deal-parties">
+      <div><div class="party-label">Замовник</div><div class="party-addr">${shortAddr(buyer)}</div></div>
+      <div><div class="party-label">Виконавець</div><div class="party-addr">${shortAddr(seller)}</div></div>
+      <div><div class="party-label">Арбітр</div><div class="party-addr">${isMyCase ? '<strong>Ви</strong>' : shortAddr(arbiter)}</div></div>
+    </div>
+    ${disputeReason ? `<div style="margin-top:10px;font-size:12px;color:var(--muted);">Причина: <strong style="color:var(--text)">${disputeReason}</strong></div>` : ''}
+    <div style="display:flex;gap:16px;margin-top:10px;">
+      <div>${taskLink}</div>
+      <div>${workLink}</div>
+    </div>
+    ${isMyCase ? `
+    <div class="btn-row" style="margin-top:12px;">
+      <button class="btn btn-outline" onclick="resolveDispute(${id}, true)" style="font-size:12px;padding:8px 14px;">На користь замовника</button>
+      <button class="btn btn-primary" onclick="resolveDispute(${id}, false)" style="font-size:12px;padding:8px 14px;">На користь виконавця</button>
+    </div>` : ''}
+  </div>`;
     }
   } catch(e) { console.error(e); }
 }
